@@ -146,7 +146,7 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;letter-spacing:-.01
 .hear .lv i.on{background:var(--cyan)}
 .hear b{min-width:26px;font-variant-numeric:tabular-nums}
 .hear.off{opacity:.55}
-.stage{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;position:relative}
+.stage{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly;position:relative}
 .bigwrap{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:6px}
 .bigcap{font:700 13px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:#f3eaff;opacity:.85}
 .prompt #promptT{display:none}
@@ -155,7 +155,7 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;letter-spacing:-.01
 .bigl.no{color:var(--red)}
 .hint{min-height:24px;font:700 16px/1.2 var(--body);color:#fff7e8;text-align:center;padding:0 16px}
 .hint.bad{color:#ffe1e4}
-.staffbox{position:relative;height:clamp(150px,30vh,250px);margin:0 var(--sar) 0 var(--sal)}
+.staffbox{position:relative;height:clamp(190px,31vh,270px);margin:0 var(--sar) 0 var(--sal)}
 .staffbox svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:hidden}
 .clefmask{position:absolute;left:0;top:0;bottom:0;width:calc(var(--sal) + 120px);pointer-events:none}
 .count{position:absolute;inset:0;display:grid;place-items:center;font:700 120px/1 var(--display);color:#fff;text-shadow:0 6px 0 rgba(40,10,120,.35);pointer-events:none}
@@ -170,25 +170,31 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;letter-spacing:-.01
 .key.t span{opacity:1;color:#fff}
 .key.x.w{background:var(--red)} .key.x.b{background:var(--red)}
 .key.p.w{background:var(--cyan)} .key.p.b{background:var(--cyan)}
-.toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--sat) + 70px);z-index:60;max-width:min(92vw,520px);padding:10px 16px;border-radius:14px;background:var(--ink);color:#fff;font-weight:700;font-size:15px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 24px);z-index:60;max-width:min(92vw,520px);padding:10px 16px;border-radius:14px;background:var(--ink);color:#fff;font-weight:700;font-size:15px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
-/* landscape phone: staff takes the middle, the big letter shrinks into the top bar */
+/* landscape (phone turned sideways, or the screen rotated with the button): staff in the middle, big letter moves to the top bar */
+#play.land .bigwrap{display:none}
+#play.land .prompt{font-size:24px}
+#play.land .prompt #promptT{display:inline}
+#play.land .ppill{width:118px}
+#play.land .staffbox{height:auto;flex:1}
+#play.land .stage{justify-content:stretch}
+#play.land .hint{position:absolute;left:0;right:0;top:2px}
+#play.land .kbd{height:32%}
+#play.land .ptop{padding-top:calc(var(--sat) + 6px)}
+/* the screen rotated by the button, for when the phone's rotation lock is on */
+#play.rot{inset:auto;top:0;left:0;width:100vh;width:100dvh;height:100vw;height:100dvw;transform-origin:0 0}
+#play.rot.cw{transform:translateX(100vw) rotate(90deg);transform:translateX(100dvw) rotate(90deg);--sat:0px;--sab:0px;--sal:env(safe-area-inset-top,0px);--sar:env(safe-area-inset-bottom,0px)}
+#play.rot.ccw{transform:translateY(100vh) rotate(-90deg);transform:translateY(100dvh) rotate(-90deg);--sat:0px;--sab:0px;--sal:env(safe-area-inset-bottom,0px);--sar:env(safe-area-inset-top,0px)}
 @media (orientation:landscape) and (max-height:560px){
-  .bigwrap{display:none}
-  .prompt{font-size:24px}
-  .prompt #promptT{display:inline}
-  .ppill{width:118px}
-  .hint{top:4px;bottom:auto}
-  .staffbox{height:auto;flex:1}
-  .stage{justify-content:stretch}
-  .hint{position:absolute;left:0;right:0}
-  .kbd{height:30vh}
-  .ptop{padding-top:calc(var(--sat) + 6px)}
   .hero{grid-template-columns:minmax(0,1fr) auto auto}
   .hero .playbig{grid-column:auto}
   .shead{grid-template-columns:96px minmax(0,1fr) auto}
   .shead .cov{width:96px;height:96px}
 }
+.rotfab{position:absolute;right:10px;top:4px;width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.22);display:grid;place-items:center;z-index:3}
+.rotfab svg{width:20px;height:20px}
+.health{position:absolute;left:12px;right:12px;bottom:8px;text-align:center;padding:10px 14px;border-radius:12px;background:var(--ink);color:#fff;font-weight:800;font-size:15px;z-index:4}
 
 /* ---------- overlays ---------- */
 .ovl{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:calc(var(--sat) + 16px) max(16px,var(--sar)) calc(var(--sab) + 16px) max(16px,var(--sal));background:rgba(22,8,61,.62)}
@@ -223,7 +229,12 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;letter-spacing:-.01
 .seg button[aria-pressed="true"]{background:#fff;color:var(--night)}
 
 /* ---------- piano check ---------- */
-#calib{position:fixed;inset:0;z-index:40;background:var(--violet);display:flex;flex-direction:column;overflow:auto}
+#calib,#ltest{position:fixed;inset:0;z-index:40;background:var(--violet);display:flex;flex-direction:column;overflow:auto}
+body.inplay .toast{bottom:calc(clamp(110px,22vh,190px) + var(--sab) + 14px)}
+.ltlog{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;width:min(360px,90vw);max-height:30vh;overflow:auto}
+.ltlog li{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border-radius:10px;background:rgba(40,16,110,.4);font-weight:800;font-size:15px;text-align:left}
+.ltlog li.no{background:rgba(255,77,94,.28)}
+#ltest .bigl{font-size:clamp(64px,16vh,120px)}
 .cbody{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:12px max(18px,var(--sar)) 12px max(18px,var(--sal))}
 .cbody h2{font-size:clamp(28px,7vw,42px);color:#fff7e8}
 .cbody p{margin:0;max-width:34ch;color:#f3eaff;font-size:17px}
@@ -248,6 +259,7 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;letter-spacing:-.01
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-bolt" viewBox="0 0 24 24"><path fill="currentColor" d="M13.5 2 4 14h7l-1.5 8L20 10h-7z"/></symbol>
     <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-rot" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-logo" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#8f5cf7"/><rect x="7" y="9" width="7" height="22" rx="2" fill="#efede6"/><rect x="16.5" y="9" width="7" height="22" rx="2" fill="#efede6"/><rect x="26" y="9" width="7" height="22" rx="2" fill="#19e3d6"/><rect x="12" y="9" width="4" height="12" rx="1.3" fill="#15121c"/><rect x="21.5" y="9" width="4" height="12" rx="1.3" fill="#15121c"/></symbol>
   </defs>
 </svg>
@@ -342,27 +354,10 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;letter-spacing:-.01
     <div class="staffbox" id="staffbox"><svg id="staff" aria-hidden="true"></svg></div>
     <div class="hint" id="hint" aria-live="polite"></div>
     <div class="count" id="count" hidden></div>
+    <button class="rotfab" id="rotBtn" type="button" aria-label="Rotate screen"><svg><use href="#i-rot"/></svg></button>
+    <div class="health" id="health" hidden></div>
   </div>
   <div class="kbd"><div class="keys" id="keys"></div></div>
-</section>
-
-<!-- PIANO CHECK -->
-<section id="calib" hidden aria-label="Piano check">
-  <div class="ptop">
-    <button class="pbtn" id="calClose" type="button" aria-label="Close"><svg><use href="#i-back"/></svg></button>
-    <div class="prompt"><small>Piano check</small><span id="calStepT">Step 1 of 3</span></div>
-  </div>
-  <div class="cbody">
-    <h2 id="calH">Stay quiet for a moment</h2>
-    <p id="calP">I'm listening to your room so I can tell your piano apart from background noise.</p>
-    <div class="meter"><i id="calMeter"></i></div>
-    <div class="dots" id="calDots"><i></i><i></i><i></i></div>
-    <div class="cnote" id="calNote"></div>
-    <div class="btns"><button class="btn" id="calSkip" type="button">Skip</button><button class="btn pri" id="calGo" type="button" hidden>Start playing</button></div>
-  </div>
-  <div class="kbd"><div class="keys" id="calKeys"></div></div>
-</section>
-
 <!-- RESULTS -->
 <div class="ovl" id="results" hidden>
   <div class="card">
@@ -386,13 +381,33 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;letter-spacing:-.01
       <button class="btn pri" id="resumeBtn" type="button">Resume</button>
       <button class="btn" id="restartBtn" type="button">Start again</button>
       <button class="btn" id="hearBtn" type="button">Hear it played</button>
+      <button class="btn" id="rotBtn2" type="button">Rotate screen</button>
       <button class="btn" id="pSetBtn" type="button">Settings</button>
       <button class="btn" id="exitBtn" type="button">Exit</button>
     </div>
   </div>
 </div>
 
-<!-- SETTINGS -->
+</section>
+
+<!-- PIANO CHECK -->
+<section id="calib" hidden aria-label="Piano check">
+  <div class="ptop">
+    <button class="pbtn" id="calClose" type="button" aria-label="Close"><svg><use href="#i-back"/></svg></button>
+    <div class="prompt"><small>Piano check</small><span id="calStepT">Step 1 of 3</span></div>
+  </div>
+  <div class="cbody">
+    <h2 id="calH">Stay quiet for a moment</h2>
+    <p id="calP">I'm listening to your room so I can tell your piano apart from background noise.</p>
+    <div class="meter"><i id="calMeter"></i></div>
+    <div class="dots" id="calDots"><i></i><i></i><i></i></div>
+    <div class="cnote" id="calNote"></div>
+    <div class="btns"><button class="btn" id="calSkip" type="button">Skip</button><button class="btn pri" id="calGo" type="button" hidden>Start playing</button></div>
+  </div>
+  <div class="kbd"><div class="keys" id="calKeys"></div></div>
+</section>
+
+
 <div class="ovl sheet" id="settings" hidden>
   <div class="card">
     <h2>Settings</h2>
@@ -406,11 +421,31 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;letter-spacing:-.01
     <label class="set"><span><b>Listening sensitivity</b><small>Raise it if notes are missed, lower it in a noisy room</small></span>
       <select id="sSens"><option value="1.6">Low</option><option value="1">Normal</option><option value="0.6">High</option></select></label>
     <label class="set"><span><b>Keep going by itself</b><small>Moves to the next step after each result</small></span><input type="checkbox" id="sAuto"></label>
+    <label class="set"><span><b>Ignore my voice</b><small>Stricter: only sounds that behave like a piano count. Turn off if your keyboard holds notes (organ, strings)</small></span><input type="checkbox" id="sFilter"></label>
+    <label class="set"><span><b>Rotate screen</b><small>For when your phone's rotation is locked</small></span>
+      <select id="sRot"><option value="auto">Automatic</option><option value="cw">Sideways, phone turned left</option><option value="ccw">Sideways, phone turned right</option></select></label>
+    <label class="set"><span><b>Battery saver</b><small>Listens a little less often and skips the confetti</small></span><input type="checkbox" id="sLite"></label>
+    <div class="set"><span><b>Test my listening</b><small>See what the app hears, and whether it ignores your voice</small></span><button class="btn" id="sLtest" type="button">Open</button></div>
     <div class="set"><span><b>Piano check</b><small id="sCalSub">Not checked yet</small></span><button class="btn" id="sCal" type="button">Run again</button></div>
     <div class="set"><span><b>Reset progress</b><small id="resetSub">Clears stars and streak on this phone</small></span><button class="btn" id="sReset" type="button">Reset</button></div>
     <div class="btns" style="margin-top:10px"><button class="btn pri" id="sClose" type="button">Done</button></div>
   </div>
 </div>
+
+<!-- LISTENING TEST -->
+<section id="ltest" hidden aria-label="Test my listening">
+  <div class="ptop">
+    <button class="pbtn" id="ltClose" type="button" aria-label="Close"><svg><use href="#i-back"/></svg></button>
+    <div class="prompt"><small>Test my listening</small><span style="display:inline">Play a note, then say something</span></div>
+  </div>
+  <div class="cbody">
+    <div class="bigl" id="ltNote">–</div>
+    <div class="meter"><i id="ltMeter"></i></div>
+    <div class="cnote" id="ltState"></div>
+    <ul class="ltlog" id="ltLog"></ul>
+    <p>Piano notes show a tick. Your voice should be ignored.</p>
+  </div>
+</section>
 
 <canvas id="confetti" hidden></canvas>
 <div class="toast" id="toast" hidden></div>
@@ -630,7 +665,7 @@ function chime(ok) {
 /* ================= coach voice ================= */
 const NOVELTY = /Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Fred|Junior|Kathy|Ralph|Grandma|Grandpa|Eddy|Flo|Reed|Rocko|Sandy|Shelley/;
 const Coach = (() => {
-  let list = [], voice = null, speaking = false, wantURI = '';
+  let list = [], voice = null, speaking = false, wantURI = '', seq = 0;
   const ok = 'speechSynthesis' in window;
   function quality(v) {
     const u = (v.voiceURI + ' ' + v.name).toLowerCase();
@@ -657,17 +692,18 @@ const Coach = (() => {
     get speaking() { return speaking; },
     setVoice(uri) { wantURI = uri || ''; load(); },
     unlock() { if (!ok) return; try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch (e) {} },
-    stop() { if (ok) try { speechSynthesis.cancel(); } catch (e) {} speaking = false; Engine.paused = false; },
+    stop() { seq++; if (ok) try { speechSynthesis.cancel(); } catch (e) {} speaking = false; Engine.paused = false; },
     say(text) {
       return new Promise(res => {
         if (!ok || !text) return res();
         try {
+          const id = ++seq;                 // only the newest sentence may change the "speaking" state
           speechSynthesis.cancel();
           const u = new SpeechSynthesisUtterance(text);
           if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'en-GB';
           u.rate = 0.97; u.pitch = 1.02;
           let done = false;
-          const fin = () => { if (done) return; done = true; speaking = false; Engine.holdUntil(performance.now() + 450); res(); };
+          const fin = () => { if (done) return; done = true; if (id === seq) { speaking = false; Engine.holdUntil(performance.now() + 500); } res(); };
           u.onend = fin; u.onerror = fin;
           speaking = true; Engine.holdUntil(performance.now() + 60000);
           speechSynthesis.speak(u);
@@ -682,14 +718,18 @@ const Coach = (() => {
    It knows which note you should play next, so it checks for THAT note:
    1. a strike is spotted (sudden rise in loudness, or a sudden rise at the target's own frequencies);
    2. the spectrum just before the strike is subtracted, so notes still ringing are ignored;
-   3. each candidate note is scored by its first six harmonics; the target wins if it scores near the top. */
+   3. each candidate note is scored by its first six harmonics; the target wins if it scores near the top;
+   4. the sound must behave like a piano: a sudden start and a steady pitch. A voice swells and wobbles, so it is ignored;
+   5. if nothing is heard for a while although there is sound, it becomes a little more sensitive by itself. */
 const Engine = (() => {
   const FFT = 8192, NB = FFT / 2, RING = 10, CLO = 43, CHI = 91, W = [1, .85, .65, .5, .38, .3];
-  let ac, stream, src, an, sr = 48000, binHz = 5.86, KMAX = 1500, td, db, ring = [], ri = 0, raf = 0;
-  let running = false, hold = 0, floor = 1, prevRms = 0, lastOnset = -1e9, lockUntil = 0, ev = null, tbHist = [];
+  let ac, stream, src, an, track = null, trackEnded = false, sr = 48000, binHz = 5.86, KMAX = 1500, td, db, ring = [], ri = 0, raf = 0, frameNo = 0;
+  let running = false, hold = 0, floor = 1, prevRms = 0, lastOnset = -1e9, lockUntil = 0, ev = null, tbHist = [], rmsHist = [];
+  let adapt = 1, lastEmit = 0, lastAdapt = 0, pk3 = 0, zeroSince = 0, startedAt = 0, lastYin = 0, quietWait = 0, quietSince = 0;
   const S = new Float32Array(128); let diff;
-  const st = { targets: [], strict: false, sens: 1, cal: null, tune: 1, listener: null, tap: null };
-  const info = { rms: 0, heard: null, freq: 0, salTop: 0, onset: false, level: 0 };
+  const st = { targets: [], strict: false, sens: 1, cal: null, tune: 1, listener: null, tap: null, probe: null, lite: false, filter: true };
+  const info = { rms: 0, heard: null, freq: 0, salTop: 0, onset: false, level: 0, verdict: '', silent: false };
+  const median = a => { const b = a.slice().sort((x, y) => x - y); return b.length ? b[Math.floor(b.length / 2)] : 0; };
 
   const fOf = m => 440 * Math.pow(2, (m - 69) / 12) * st.tune;
   function peak(arr, f) {
@@ -709,13 +749,16 @@ const Engine = (() => {
     return v;
   }
   function gates() {
-    const c = st.cal, s = st.sens;
-    const on = c ? Math.max(c.noiseRms * 2.2, c.noteRms * 0.1, 0.0035) : 0.008;
-    const sg = c ? Math.max(c.noiseSal * 4, c.noteSal * 0.06, 0.0004) : 0.0012;
+    const c = st.cal, s = st.sens * adapt;
+    let on = 0.008, sg = 0.0012;
+    if (c) {
+      on = Math.max(c.noiseRms * 2, 0.0025); on = Math.min(on, Math.max(c.noteRms * 0.12, c.noiseRms * 1.5, 0.002));
+      sg = Math.max(c.noiseSal * 3, 0.0003); sg = Math.min(sg, Math.max(c.noteSal * 0.05, c.noiseSal * 2, 0.0002));
+    }
     return { on: on * s, sal: sg * s };
   }
 
-  /* YIN pitch, used for the "Hearing" readout and for tuning in the piano check */
+  /* YIN pitch, used for the "Hearing" readout, the piano check and the voice test */
   const YW = 1536;
   function yin(buf) {
     const maxT = Math.floor(sr / 100), minT = Math.floor(sr / 1400);
@@ -732,12 +775,45 @@ const Engine = (() => {
     return 0;
   }
 
+  /* does this sound behave like a struck piano string? m = the note it should be */
+  function verdict(e, m) {
+    if (e.rmsOnset && e.rs.length >= 4) {                  // a struck string reaches full volume at once; a voice swells
+      const pk = Math.max(...e.rs.map(x => x[1])), hit = e.rs.find(x => x[1] >= 0.8 * pk);
+      if (hit && hit[0] > 65) return 'slow';
+    }
+    if (!e.rmsOnset && e.ts.length >= 4) {                   // started by the note's own frequencies: same check there
+      const pk = Math.max(...e.ts.map(x => x[1])), hit = pk > gates().sal * 4 && e.ts.find(x => x[1] >= 0.8 * pk);
+      if (hit && hit[0] > 70) return 'slow';
+    }
+    if (!st.filter) return 'piano';
+    const f = e.freqs;
+    if (f.length >= 3) {
+      const med = median(f), c = f.map(x => 1200 * Math.log2(x / med)), mean = c.reduce((a, b) => a + b, 0) / c.length;
+      const sd = Math.sqrt(c.reduce((a, b) => a + (b - mean) * (b - mean), 0) / c.length);
+      if (sd > 30) return 'wobbly';
+      if (m != null) {                                       // the pitch really heard must be the note itself, in any octave
+        let d = 1200 * Math.log2(med / fOf(m)); d -= 1200 * Math.round(d / 1200);
+        if (Math.abs(d) > 65) return 'offpitch';
+      }
+    }
+    if (e.rmsOnset && e.rs.length >= 5) {                    // a struck note fades; a held voice does not
+      const pk = Math.max(...e.rs.map(x => x[1])), last = e.rs[e.rs.length - 1][1];
+      if (e.pre < 0.3 * pk && last >= 0.92 * pk) return 'sustained';
+    }
+    return 'piano';
+  }
+
   function frame(now) {
     raf = requestAnimationFrame(frame);
     if (!running) return;
+    if (hold - now > 1e6) return;                          // paused: no work at all
+    if (st.lite && (frameNo++ & 1)) return;                // battery saver: about 30 looks a second
     an.getFloatTimeDomainData(td);
     let e = 0; for (let i = FFT - 1024; i < FFT; i++) e += td[i] * td[i];
     const rms = Math.sqrt(e / 1024);
+    if (rms === 0) { if (!zeroSince) zeroSince = now; } else zeroSince = 0;
+    info.silent = !!zeroSince && now - zeroSince > 2500;
+    rmsHist.push(rms); if (rmsHist.length > 16) rmsHist.shift();
     an.getFloatFrequencyData(db);
     const mag = ring[ri];
     for (let k = 0; k < KMAX; k++) { const v = db[k]; mag[k] = v > -150 ? Math.pow(10, v / 20) : 0; }
@@ -748,20 +824,24 @@ const Engine = (() => {
     info.rms = rms; info.level = Math.min(1, rms / Math.max(g.on * 6, 0.02)); info.onset = false;
     const ref4 = back(4);
     for (let k = 0; k < KMAX; k++) { const d = mag[k] - ref4[k]; diff[k] = d > 0 ? d : 0; }
-    let top = 0, topM = -1;
-    for (let m = CLO; m <= CHI; m++) { const s = sal(diff, m); S[m] = s; if (s > top) { top = s; topM = m; } }
+    let top = 0;
+    for (let m = CLO; m <= CHI; m++) { const s = sal(diff, m); S[m] = s; if (s > top) top = s; }
     info.salTop = top;
-    if ((ri & 1) === 0) {
+    let fresh = false;
+    if (st.lite || ev || (ri & 1) === 0) {
+      fresh = true;
       if (rms > g.on * 0.5) { const f = yin(td); info.freq = f; info.heard = f > 60 ? Math.round(69 + 12 * Math.log2(f / (440 * st.tune))) : null; }
       else { info.freq = 0; info.heard = null; }
     }
 
     if (rms < floor) floor = rms; else floor += (rms - floor) * 0.02;
+    pk3 = Math.max(rms, pk3 * 0.995);
     const rmsOnset = rms > g.on && rms > floor * 1.45 && rms > prevRms * 1.12 && now - lastOnset > 110;
     prevRms = rms;
-    let tbRise = false;
+    const active = !!(st.listener && st.targets.length), probing = !!st.probe && !st.targets.length;
+    let tbRise = false, tb = 0;
     if (st.targets.length) {
-      let tb = 0; for (const t of st.targets) tb = Math.max(tb, targetSal(mag, t));
+      for (const t of st.targets) tb = Math.max(tb, targetSal(mag, t));
       tbHist.push(tb); if (tbHist.length > 7) tbHist.shift();
       tbRise = tbHist.length >= 7 && tb > tbHist[0] * 3 && tb > g.sal * 2;
     }
@@ -769,16 +849,31 @@ const Engine = (() => {
     if (st.tap) st.tap(info, now);
     ri = (ri + 1) % RING;
 
-    if (now < hold || now < lockUntil || !st.listener || !st.targets.length) { if (now < hold) ev = null; return; }
-    if (!ev && (rmsOnset || tbRise)) {
-      lastOnset = now;
-      ev = { t: now, ref: back(rmsOnset ? 4 : RING - 1).slice(0, KMAX), ok: 0, okM: null, votes: {}, wm: {} };
+    /* nothing heard for a while although there is sound just under the gate: listen a little harder */
+    const ref = st.cal ? st.cal.noiseRms : floor;
+    if (active && now >= hold && now - Math.max(lastEmit, lastAdapt, startedAt) > 5000 && pk3 > ref * 2 && pk3 < g.on) {
+      adapt = Math.max(0.4, adapt * 0.8); lastAdapt = now;
     }
-    if (!ev || now - ev.t < 18) return;
+
+    if (now < hold || now < lockUntil || !(active || probing)) { if (now < hold) ev = null; return; }
+    if (quietWait && (rms < quietWait || now - quietSince > 2500)) quietWait = 0;     // a rejected sound (a voice) must die away first
+    if (!ev && (rmsOnset || (tbRise && active && !quietWait))) {
+      lastOnset = now;
+      const pre = Math.max(1e-4, median(rmsHist.slice(-9, -4)));
+      ev = { t: now, rmsOnset, pre, rs: [[0, rms]], ts: [[0, tb]], pk60: rms, pk100: rms, freqs: [], ref: back(rmsOnset ? 4 : RING - 1).slice(0, KMAX), ok: 0, okM: null, votes: {}, wm: {}, bestM: null, bestS: 0 };
+    }
+    if (!ev) return;
+    const age = now - ev.t;
+    if (age > 0 && age <= 125) { ev.rs.push([age, rms]); ev.ts.push([age, tb]); }
+    if (age < 18) return;
+    if (age <= 60) ev.pk60 = Math.max(ev.pk60, rms);
+    if (age <= 110) ev.pk100 = Math.max(ev.pk100, rms);
+    if (fresh && age >= 40 && info.freq > 60 && rms > g.on * 0.5) ev.freqs.push(info.freq);
     for (let k = 0; k < KMAX; k++) { const d = mag[k] - ev.ref[k]; diff[k] = d > 0 ? d : 0; }
     let t2 = 0, t2M = -1;
     for (let m = CLO; m <= CHI; m++) { const s = sal(diff, m); S[m] = s; if (s > t2) { t2 = s; t2M = m; } }
-    if (t2 > g.sal) {
+    if (t2 > ev.bestS) { ev.bestS = t2; ev.bestM = t2M; }
+    if (t2 > g.sal && active) {
       let hitM = null, best = 0;
       for (const t of st.targets) {
         let v = st.strict ? S[t] : 0;
@@ -788,33 +883,54 @@ const Engine = (() => {
       if (hitM != null && best >= 0.62 * t2) { ev.ok++; ev.okM = hitM; }
       else { const k = pc(t2M); ev.votes[k] = (ev.votes[k] || 0) + 1; ev.wm[k] = t2M; }
     }
-    if (ev.ok >= 2) { const m = ev.okM; ev = null; lockUntil = now + 90; tbHist.length = 0; st.listener({ ok: true, midi: m }); }
-    else if (now - ev.t > 240) {
+    if (active && ev.ok >= 2 && age >= 115) {
+      const m = ev.okM, v = verdict(ev, m), t0 = ev.t; if (v !== 'piano') { quietWait = Math.max(g.on * 1.5, 0.3 * Math.max(...ev.rs.map(x => x[1]))); quietSince = now; } ev = null; info.verdict = v;
+      if (v === 'piano') { lockUntil = now + 90; tbHist.length = 0; lastEmit = now; adapt = Math.min(1, adapt * 1.03); st.listener({ ok: true, midi: m, t: t0 }); }
+      return;
+    }
+    if (age > 260) {
+      if (probing) {
+        const bm = ev.bestS > g.sal ? ev.bestM : null, v = verdict(ev, bm), r = { midi: bm, verdict: v, t: ev.t }; ev = null; info.verdict = v; st.probe(r); return;
+      }
       let bk = null, bv = 0; for (const k in ev.votes) if (ev.votes[k] > bv) { bv = ev.votes[k]; bk = k; }
-      const wm = bk != null ? ev.wm[bk] : null; ev = null;
-      if (bv >= 3) st.listener({ ok: false, midi: wm });
+      const wm = bk != null ? ev.wm[bk] : null, v = verdict(ev, wm), t0 = ev.t; if (v !== 'piano') { quietWait = Math.max(g.on * 1.5, 0.3 * Math.max(...ev.rs.map(x => x[1]))); quietSince = now; } ev = null; info.verdict = v;
+      if (bv >= 3 && v === 'piano') { lastEmit = now; st.listener({ ok: false, midi: wm, t: t0 }); }
     }
   }
 
   return {
     info,
     get running() { return running; },
+    get adaptValue() { return adapt; },
     async start() {
       if (running) return;
       ac = ensureAudio();
-      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
-      src = ac.createMediaStreamSource(stream); an = ac.createAnalyser();
-      an.fftSize = FFT; an.smoothingTimeConstant = 0; src.connect(an);
-      sr = ac.sampleRate; binHz = sr / FFT; KMAX = Math.min(NB, Math.ceil(9000 / binHz));
-      td = new Float32Array(FFT); db = new Float32Array(NB); diff = new Float32Array(KMAX);
-      ring = Array.from({ length: RING }, () => new Float32Array(KMAX));
-      running = true; cancelAnimationFrame(raf); raf = requestAnimationFrame(frame);
+      const s = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+      try {
+        if (ac.state !== 'running') await Promise.race([ac.resume(), new Promise(r => setTimeout(r, 1500))]);
+        stream = s; track = s.getAudioTracks()[0] || null; trackEnded = false;
+        if (track) track.onended = () => { trackEnded = true; };
+        src = ac.createMediaStreamSource(s); an = ac.createAnalyser();
+        an.fftSize = FFT; an.smoothingTimeConstant = 0; src.connect(an);
+        sr = ac.sampleRate; binHz = sr / FFT; KMAX = Math.min(NB, Math.ceil(9000 / binHz));
+        td = new Float32Array(FFT); db = new Float32Array(NB); diff = new Float32Array(KMAX);
+        ring = Array.from({ length: RING }, () => new Float32Array(KMAX)); rmsHist = []; ri = 0;
+        startedAt = performance.now(); zeroSince = 0; adapt = 1;
+        running = true; cancelAnimationFrame(raf); raf = requestAnimationFrame(frame);
+      } catch (err) { try { s.getTracks().forEach(t => t.stop()); } catch (e) {} stream = null; throw err; }
     },
-    stop() { running = false; cancelAnimationFrame(raf); try { stream && stream.getTracks().forEach(t => t.stop()); src && src.disconnect(); } catch (e) {} stream = null; },
+    stop() { running = false; cancelAnimationFrame(raf); try { stream && stream.getTracks().forEach(t => t.stop()); src && src.disconnect(); } catch (e) {} stream = null; track = null; },
+    health() {
+      if (!running) return 'off';
+      if (trackEnded || (track && track.readyState === 'ended')) return 'ended';
+      if (ac && ac.state !== 'running') return 'suspended';
+      if (info.silent) return 'muted';
+      return 'ok';
+    },
     setTargets(list, strict) { if (list.length === st.targets.length && list.every((v, i) => v === st.targets[i]) && !!strict === st.strict) return; st.targets = list.slice(); st.strict = !!strict; tbHist.length = 0; },
-    set listener(fn) { st.listener = fn; }, set tap(fn) { st.tap = fn; },
-    set sens(v) { st.sens = v; },
-    setCal(c) { st.cal = c; st.tune = c && c.cents ? Math.pow(2, c.cents / 1200) : 1; },
+    set listener(fn) { st.listener = fn; }, set tap(fn) { st.tap = fn; }, set probe(fn) { st.probe = fn; ev = null; },
+    set sens(v) { st.sens = v; }, set lite(v) { st.lite = !!v; }, set filter(v) { st.filter = !!v; },
+    setCal(c) { st.cal = c; st.tune = c && c.cents ? Math.pow(2, c.cents / 1200) : 1; adapt = 1; },
     holdUntil(t) { hold = t; ev = null; },
     set paused(v) { hold = v ? performance.now() + 3.6e6 : performance.now() + 300; ev = null; },
     gates
@@ -825,7 +941,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const KEY = 'keystep.v2';
 const DEF = { stars:{}, steps:{}, days:[], cal:null, calSkipped:false, last:{ course:'basics', song:'midc' }, workout:'',
-  set:{ coach:'mistakes', voice:'', demo:true, names:true, oct:true, sens:'1', auto:true, speed:'0.95' } };
+  set:{ coach:'mistakes', voice:'', demo:true, names:true, oct:true, sens:'1', auto:true, speed:'0.95', lite:false, rot:'auto', filter:true } };
 let D = JSON.parse(JSON.stringify(DEF));
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { D = Object.assign(D, s); D.set = Object.assign({}, DEF.set, s.set || {}); } } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} };
@@ -848,8 +964,8 @@ let toastT = 0;
 function toast(msg, ms) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, ms || 3200); }
 
 /* ================= views ================= */
-const VIEWS = ['home', 'course', 'songv', 'play', 'calib'];
-function show(v) { VIEWS.forEach(x => { $('#' + x).hidden = x !== v; }); if (v !== 'play' && v !== 'calib') window.scrollTo(0, 0); }
+const VIEWS = ['home', 'course', 'songv', 'play', 'calib', 'ltest'];
+function show(v) { VIEWS.forEach(x => { $('#' + x).hidden = x !== v; }); document.body.classList.toggle('inplay', v === 'play'); if (v !== 'play' && v !== 'calib') window.scrollTo(0, 0); }
 
 function renderHome() {
   $('#streak').textContent = streak();
@@ -960,6 +1076,7 @@ var onVoices = fillVoices;
 function openSettings() {
   $('#sCoach').value = D.set.coach; $('#sDemo').checked = D.set.demo; $('#sNames').checked = D.set.names;
   $('#sOct').checked = D.set.oct; $('#sSens').value = D.set.sens; $('#sAuto').checked = D.set.auto;
+  $('#sFilter').checked = D.set.filter; $('#sRot').value = D.set.rot; $('#sLite').checked = D.set.lite;
   $('#sCalSub').textContent = calText(); fillVoices();
   $('#sReset').textContent = 'Reset'; $('#resetSub').textContent = 'Clears stars and streak on this phone';
   $('#settings').hidden = false;
@@ -974,13 +1091,17 @@ $('#sNames').onchange = e => { D.set.names = e.target.checked; save(); };
 $('#sOct').onchange = e => { D.set.oct = e.target.checked; save(); };
 $('#sSens').onchange = e => { D.set.sens = e.target.value; Engine.sens = +e.target.value; save(); };
 $('#sAuto').onchange = e => { D.set.auto = e.target.checked; save(); };
+$('#sRot').onchange = e => { D.set.rot = e.target.value; save(); if (P && !$('#play').hidden) layoutPlay(); };
+$('#sFilter').onchange = e => { D.set.filter = e.target.checked; Engine.filter = D.set.filter; save(); };
+$('#sLite').onchange = e => { D.set.lite = e.target.checked; Engine.lite = D.set.lite; save(); };
+$('#sLtest').onclick = () => { $('#settings').hidden = true; openLtest(); };
 $('#sCal').onclick = () => { $('#settings').hidden = true; openCalib(null); };
 $('#sReset').onclick = () => {
   const b = $('#sReset');
   if (b.textContent !== 'Tap again') { b.textContent = 'Tap again'; $('#resetSub').textContent = 'Tap again to clear all stars and your streak'; return; }
   D.stars = {}; D.steps = {}; D.days = []; D.workout = ''; save(); b.textContent = 'Reset'; $('#resetSub').textContent = 'Progress cleared'; renderHome();
 };
-Coach.setVoice(D.set.voice); Engine.sens = +D.set.sens; if (D.cal) Engine.setCal(D.cal);
+Coach.setVoice(D.set.voice); Engine.sens = +D.set.sens; Engine.lite = D.set.lite; Engine.filter = D.set.filter; if (D.cal) Engine.setCal(D.cal);
 
 /* ================= workout ================= */
 function noteDrill(n) {
@@ -1012,17 +1133,29 @@ async function keepAwake() { try { if ('wakeLock' in navigator && !lock) { lock 
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && P) { keepAwake(); ensureAudio(); } });
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
+let micFlight = null;
 async function needMic() {
   ensureAudio(); Coach.unlock();
   if (Engine.running) return true;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { toast('This browser cannot use the microphone. Open Keystep in Safari from its https link.', 6000); return false; }
-  try { await Engine.start(); return true; }
-  catch (e) { toast('The microphone is blocked. iPhone Settings → Safari → Microphone → Allow, then reload this page.', 7000); return false; }
+  try {
+    micFlight = micFlight || Engine.start();      // one start at a time, however many taps
+    await micFlight; micFlight = null; return true;
+  } catch (e) {
+    micFlight = null; try { Engine.stop(); } catch (_) {}
+    const n = e && e.name;
+    if (n === 'NotAllowedError' || n === 'SecurityError') toast('The microphone is blocked. iPhone Settings → Safari → Microphone → Allow, then reload this page.', 7000);
+    else toast('Could not start listening (' + (n || 'error') + '). Close other apps that use the microphone, then try again.', 7000);
+    return false;
+  }
 }
 
+let starting = false;
 async function startStep(song, step, opt) {
   opt = opt || {};
-  if (!(await needMic())) return;
+  if (starting) return; starting = true;
+  const okMic = await needMic(); starting = false;
+  if (!okMic) return;
   if (!D.cal && !D.calSkipped) { openCalib(() => startStep(song, step, opt)); return; }
   keepAwake();
   let evs = song.ev;
@@ -1111,7 +1244,7 @@ function dirWord(heard, target) {
 function onHeard(ev) {
   if (!P || P.state !== 'play') return;
   const now = performance.now(); P.lastEvent = now;
-  if (P.timed) return onHeardTimed(ev, now);
+  if (P.timed) return onHeardTimed(ev, ev.t || now);
   const n = P.notes[P.idx]; if (!n) return;
   if (ev.ok) {
     n.state = n.state === 'retry' ? 'done' : 'done'; P.hits++;
@@ -1147,9 +1280,20 @@ const curBeat = now => (now - P.t0) / 1000 * P.song.bpm * P.speed / 60;
 const winBeats = () => Math.max(0.3, 0.32 * P.song.bpm * P.speed / 60);
 
 /* ---- per-frame loop: timed scrolling, hearing meter, gentle reminders ---- */
+let lastHealth = 0, lf = 0;
+const HEALTH = {
+  ended: 'Listening stopped. Tap the screen to start it again.',
+  suspended: 'The iPhone paused listening. Tap the screen to resume.',
+  muted: "I can't hear any sound. Check the microphone isn't covered or muted."
+};
 function playLoop(now) {
   requestAnimationFrame(playLoop);
   if (!P || $('#play').hidden) return;
+  if (D.set.lite && (lf++ & 1)) return;
+  if (now - lastHealth > 1000) {
+    lastHealth = now; const h = Engine.health(), el = $('#health');
+    if (HEALTH[h]) { el.textContent = HEALTH[h]; el.hidden = false; } else el.hidden = true;
+  }
   const inf = Engine.info, bars = $$('#hear .lv i');
   bars.forEach((b, i) => b.classList.toggle('on', inf.level > (i + 1) * 0.18));
   $('#heard').textContent = inf.heard != null && inf.rms > Engine.gates().on * 0.5 ? NAMES[pc(inf.heard)] : '–';
@@ -1188,15 +1332,23 @@ function bigFlash(c) { const b = $('#bigl'); b.classList.remove('ok', 'no'); voi
 const VH = 140, TOP = 40, GAP = 12, BOT = TOP + 4 * GAP, CLEFW = 64;
 const yOf = dia => BOT - (dia - 30) * GAP / 2;    // dia 30 = E4 on the bottom line
 let VW = 600, XS = [], XEND = 0, PLAYX = 120;
-function noteW(d) { return 30 + 18 * Math.min(d, 4); }
+function noteW(d) { return 26 + 14 * Math.min(d, 4); }
+function applyLand() {
+  const pl = $('#play'), rot = D.set.rot;
+  pl.classList.toggle('rot', rot !== 'auto'); pl.classList.toggle('cw', rot === 'cw'); pl.classList.toggle('ccw', rot === 'ccw');
+  pl.classList.toggle('land', rot !== 'auto' || (innerWidth > innerHeight && innerHeight <= 560));
+}
 function layoutPlay() {
-  const box = $('#staffbox').getBoundingClientRect();
-  VW = Math.max(300, VH * box.width / Math.max(1, box.height));
-  PLAYX = CLEFW + 46;
-  const svg = $('#staff'); svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`); svg.setAttribute('preserveAspectRatio', 'xMinYMid meet');
+  applyLand();
+  const sb = $('#staffbox'), bw = sb.clientWidth || 360, bh = sb.clientHeight || 200;
+  VW = Math.max(330, VH * bw / bh);
+  const vh = VW * bh / bw, y0 = -(vh - VH) / 2;
+  PLAYX = CLEFW + 2 * noteW(1) + 22;           // room for the last two notes you played to stay in view
+  const svg = $('#staff'); svg.setAttribute('viewBox', `0 ${y0} ${VW} ${vh}`); svg.setAttribute('preserveAspectRatio', 'xMinYMid meet');
   buildStaff(); buildKeys('#keys', P.song, P.notes);
   renderStates(); scrollTo_(P.timed ? 0 : P.idx, true);
 }
+window.addEventListener('orientationchange', () => setTimeout(() => { if (P && !$('#play').hidden) layoutPlay(); }, 250));
 window.addEventListener('resize', () => { if (P && !$('#play').hidden) layoutPlay(); if (!$('#calib').hidden) buildKeys('#calKeys', null, null, 48, 83); });
 
 function buildStaff() {
@@ -1242,7 +1394,7 @@ function buildStaff() {
     <rect x="0" y="${TOP}" width="${VW}" height="${4 * GAP}" fill="#efede6"/>${lines}
     <g id="scroll" style="transition:transform .38s cubic-bezier(.3,.7,.3,1)">${g}</g>
     <g id="ghost"></g>
-    <rect x="-400" y="-60" width="${CLEFW + 400}" height="${VH + 120}" fill="${purple}"/>
+    <rect x="-400" y="-300" width="${CLEFW + 400}" height="${VH + 600}" fill="${purple}"/>
     <rect x="-400" y="${TOP}" width="${CLEFW + 400}" height="${4 * GAP}" fill="#efede6"/>
     ${[0, 1, 2, 3, 4].map(i => `<line x1="-400" x2="${CLEFW}" y1="${TOP + i * GAP}" y2="${TOP + i * GAP}" stroke="${ink}" stroke-width="1.3"/>`).join('')}
     <text x="10" y="${TOP + 3 * GAP + 9}" font-family="Noto Music, 'Apple Symbols', serif" font-size="64" fill="${ink}">𝄞</text>
@@ -1298,7 +1450,7 @@ function buildKeys(sel, song, notes, lo0, hi0) {
   let lo = lo0, hi = hi0;
   if (song) {
     lo = 12 * Math.floor(song.lo / 12); hi = 12 * Math.floor(song.hi / 12) + 11;
-    const land = innerWidth > innerHeight;
+    const land = $('#play').classList.contains('land');
     const want = land ? 3 : 2;
     while ((hi - lo + 1) / 12 < want) { if (hi < 84) hi += 12; else lo -= 12; }
   }
@@ -1351,7 +1503,7 @@ function finish() {
   const nx = nextAfter();
   $('#rText').textContent = nx ? 'Next: ' + nx.label : 'All done here.';
   $('#results').hidden = false;
-  if (stars >= 2) confetti();
+  if (stars >= 2 && !D.set.lite) confetti();
   chime(true);
   const words = { 3: 'Amazing job! Three stars.', 2: 'Nice work! Two stars.', 1: 'You made it to the end. One star. Try once more for more stars.' }[stars];
   const go = () => { if (D.set.coach !== 'off') Coach.say(words + (nx && D.set.auto ? ' Next, ' + nx.say + '.' : '')); };
@@ -1422,6 +1574,46 @@ $('#hearBtn').onclick = async () => {
 };
 $('#pSetBtn').onclick = () => { $('#pause').hidden = true; openSettings(); const close = $('#sClose').onclick; $('#sClose').onclick = () => { close(); $('#sClose').onclick = close; $('#pause').hidden = false; }; };
 $('#exitBtn').onclick = exitPlay;
+
+/* ================= rotate screen ================= */
+function cycleRot() {
+  const order = ['auto', 'cw', 'ccw']; D.set.rot = order[(order.indexOf(D.set.rot) + 1) % 3]; save();
+  if (P && !$('#play').hidden) layoutPlay();
+  toast({ auto: 'Screen rotation: automatic', cw: 'Sideways: turn your phone left', ccw: 'Sideways: turn your phone right' }[D.set.rot], 2600);
+}
+$('#rotBtn').onclick = cycleRot; $('#rotBtn2').onclick = () => { $('#pause').hidden = true; cycleRot(); setTimeout(() => { $('#pause').hidden = false; }, 50); };
+
+/* ================= test my listening ================= */
+function openLtest() {
+  show('ltest'); $('#ltLog').innerHTML = ''; $('#ltNote').textContent = '–'; $('#ltState').textContent = '';
+  needMic().then(ok => {
+    if (!ok) { closeLtest(); return; }
+    Engine.paused = false; Engine.setTargets([]); Engine.listener = null;
+    Engine.probe = r => {
+      const list = $('#ltLog'), li = document.createElement('li'), good = r.verdict === 'piano';
+      li.className = good ? '' : 'no';
+      li.innerHTML = '<span>' + (r.midi != null ? NAMES[pc(r.midi)].replace('#', '♯') : '?') + '</span><span>' +
+        (good ? '✓ Piano note' : { slow: 'Ignored: starts too slowly', wobbly: 'Ignored: pitch wobbles', offpitch: 'Ignored: pitch is off', sustained: 'Ignored: held, not struck' }[r.verdict] || 'Ignored') + '</span>';
+      list.prepend(li); while (list.children.length > 6) list.lastChild.remove();
+    };
+    Engine.tap = inf => {
+      const g = Engine.gates();
+      $('#ltNote').textContent = inf.heard != null && inf.rms > g.on * 0.5 ? NAMES[pc(inf.heard)].replace('#', '♯') : '–';
+      $('#ltMeter').style.width = Math.round(inf.level * 100) + '%';
+      const h = Engine.health(); $('#ltState').textContent = HEALTH[h] || '';
+    };
+  });
+}
+function closeLtest() { Engine.probe = null; Engine.tap = null; renderHome(); show('home'); }
+$('#ltClose').onclick = closeLtest;
+
+/* the iPhone sometimes pauses or drops the microphone; a tap brings it back */
+document.addEventListener('pointerdown', async () => {
+  if (!Engine.running) return;
+  const h = Engine.health();
+  if (h === 'suspended') ensureAudio();
+  else if (h === 'ended') { Engine.stop(); await needMic(); }
+}, true);
 
 /* ================= confetti ================= */
 function confetti() {
