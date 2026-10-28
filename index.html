@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Keystep">
+<meta name="theme-color" content="#e8edf1">
+<title>Keystep Coach</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one column. Setup screen with a lesson shelf; practice screen centred on one giant note above a small key map. */
+:root{
+  --bg:#e8edf1;--panel:#f6f8fa;--ink:#16202b;--muted:#586473;--line:#cbd3dc;
+  --accent:#9b2335;--accent-ink:#fff;--note:#1f7a8c;--good:#2e8b57;--bad:#c0392b;
+  --kw:#fbfbf8;--kedge:#b9c2cc;--kb:#1b1f26;--felt:#8c1d2c;
+  --display:'DM Serif Display',Georgia,serif;--body:'Instrument Sans',-apple-system,system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#12161c;--panel:#1a2029;--ink:#e9eef3;--muted:#97a3b0;--line:#2b3440;
+  --accent:#e0566a;--accent-ink:#12161c;--note:#4fb3c6;--good:#4cc38a;--bad:#f0705f;
+  --kw:#eceae4;--kedge:#8a929c;--kb:#0b0d11;--felt:#7a1a28;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 var(--body);-webkit-text-size-adjust:100%;
+  padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:640px;margin:0 auto;min-height:100%}
+button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* Setup */
+#setup{padding-block:24px 40px;display:flex;flex-direction:column;gap:18px}
+.brand{font:400 clamp(44px,13vw,64px)/1 var(--display);margin:0}
+.lede{margin:0;color:var(--muted);max-width:40ch}
+.tips{margin:0;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-size:15px}
+.tips b{display:block;margin-bottom:6px}
+.tips ol{margin:0;padding-left:20px;display:grid;gap:4px}
+h2{font:600 12px/1 var(--body);text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:0}
+#list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.lesson{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;text-align:left;
+  padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer}
+.lesson[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.lesson .n{font:400 24px/1 var(--display);color:var(--accent)}
+.lesson b{display:block;font-weight:600}
+.lesson small{color:var(--muted);font-size:13px}
+.stars{letter-spacing:2px;color:var(--accent);white-space:nowrap}
+.stars .off{color:var(--line)}
+.opts{display:grid;gap:2px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:4px 14px}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;font-size:15px}
+.opt+.opt{border-top:1px solid var(--line)}
+.opt small{display:block;color:var(--muted);font-size:13px}
+.opt input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent);flex:none}
+.opt select{font:inherit;font-size:15px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.start{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));font-weight:700;font-size:20px;padding:18px;border-radius:14px;border:0;
+  background:var(--accent);color:var(--accent-ink);cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.err{margin:0;padding:12px 14px;border-radius:10px;border:1px solid var(--bad);color:var(--ink);background:var(--panel);font-size:15px}
+.foot{margin:0;color:var(--muted);font-size:13px}
+
+/* Practice */
+#practice{min-height:100%;display:flex;flex-direction:column;gap:14px;padding-block:14px 18px}
+.top{display:flex;align-items:center;gap:10px}
+.top .t{flex:1;min-width:0}
+.top .t b{display:block;font:400 22px/1.15 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .t small{color:var(--muted);font-size:13px}
+.stop{padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);font-weight:600;font-size:14px;cursor:pointer}
+.prog{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;min-height:240px}
+.lbl{font:600 13px/1 var(--body);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.big{font:400 clamp(120px,42vw,220px)/.9 var(--display);color:var(--ink);transition:color .15s,transform .15s}
+.big.ok{color:var(--good);transform:scale(1.06)}
+.big.no{color:var(--bad)}
+.next span:first-child{font-size:13px;text-transform:uppercase;letter-spacing:.12em;align-self:center}
+.next{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font:600 20px/1 var(--body);color:var(--muted);min-height:24px}
+.msg{min-height:52px;max-width:28ch;font-size:19px;font-weight:600}
+.msg.bad{color:var(--bad)}.msg.good{color:var(--good)}
+.heard{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:14px;color:var(--muted)}
+.heard b{color:var(--ink);min-width:2.4em;font-variant-numeric:tabular-nums}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.dot.on{background:var(--good)}
+.dot.wait{background:var(--muted)}
+.kbwrap{border-top:6px solid var(--felt);border-radius:3px}
+.kb{position:relative;height:96px}
+.key{position:absolute;top:0}
+.key.white{height:100%;background:var(--kw);border:1px solid var(--kedge);border-top:0;border-radius:0 0 5px 5px}
+.key.black{height:60%;background:var(--kb);border-radius:0 0 3px 3px;z-index:2}
+.key span{position:absolute;bottom:5px;left:0;right:0;text-align:center;font:600 11px var(--body);color:#56606c}
+.key.target.white{background:color-mix(in srgb,var(--accent) 30%,var(--kw))}
+.key.target.black{background:var(--accent)}
+.key.wrong.white{background:color-mix(in srgb,var(--bad) 30%,var(--kw))}
+.key.wrong.black{background:var(--bad)}
+.kbcap{margin:6px 0 0;text-align:center;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.big,.prog i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="setup" aria-label="Set up">
+  <h1 class="brand">Keystep</h1>
+  <p class="lede">A free piano coach that listens to your real piano. Put your phone on the music stand, press Start, and just play.</p>
+  <div class="tips">
+    <b>Before you start</b>
+    <ol>
+      <li>Turn your phone volume up so you can hear the coach.</li>
+      <li>Stand the phone on the piano, close to the keys.</li>
+      <li>When Safari asks to use the microphone, tap Allow.</li>
+    </ol>
+  </div>
+  <p class="err" id="err" hidden></p>
+  <h2>Start from</h2>
+  <ol id="list"></ol>
+  <h2>Settings</h2>
+  <div class="opts">
+    <label class="opt"><span>Play the tune first<small>The coach plays each song once so you can hear it</small></span><input type="checkbox" id="optDemo" checked></label>
+    <label class="opt"><span>Speak corrections<small>Says the note you played and the note to play</small></span><input type="checkbox" id="optSpeak" checked></label>
+    <label class="opt"><span>Any octave counts<small>An E anywhere on the piano is correct</small></span><input type="checkbox" id="optOct" checked></label>
+    <label class="opt"><span>Listening sensitivity<small>Raise it if it misses notes, lower it in a noisy room</small></span>
+      <select id="optSens"><option value="1.7">Low</option><option value="1" selected>Normal</option><option value="0.55">High</option></select></label>
+  </div>
+  <button class="start" id="startBtn" type="button">Start</button>
+  <p class="foot">All songs are traditional or by composers who died long ago. Nothing you play is recorded or sent anywhere. The listening happens on your phone.</p>
+</section>
+
+<section id="practice" hidden aria-label="Practice">
+  <div class="top">
+    <div class="t"><b id="pTitle">Song</b><small id="pSub">Song 1 of 8</small></div>
+    <button class="stop" id="stopBtn" type="button">Stop</button>
+  </div>
+  <div class="prog"><i id="pFill"></i></div>
+  <div class="stage">
+    <div class="lbl" id="pLbl">Play</div>
+    <div class="big" id="pBig" aria-live="polite">–</div>
+    <div class="next" id="pNext"></div>
+    <div class="msg" id="pMsg" aria-live="polite"></div>
+    <div class="heard"><span class="dot" id="pDot"></span>Hearing <b id="pHeard">–</b></div>
+  </div>
+  <div>
+    <div class="kbwrap"><div class="kb" id="kb"></div></div>
+    <p class="kbcap">The coloured key shows where the note is. Middle C is the C on the left.</p>
+  </div>
+</section>
+
+</div>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const SAY = ['C','C sharp','D','D sharp','E','F','F sharp','G','G sharp','A','A sharp','B'];
+const LOW = 60, HIGH = 83, BLACKS = [1,3,6,8,10], STEP = [0,0,1,1,2,3,3,4,4,5,5,6], UW = 100 / 14;
+const isBlack = m => BLACKS.includes(m % 12);
+const wIdx = m => (Math.floor(m / 12) - 5) * 7 + STEP[m % 12];
+const pc = m => ((m % 12) + 12) % 12;
+const midi = n => { const r = /^([A-G])(#?)(\d)$/.exec(n); return 12 * (+r[3] + 1) + { C:0, D:2, E:4, F:5, G:7, A:9, B:11 }[r[1]] + (r[2] ? 1 : 0); };
+const parse = str => { let t = 0; const out = []; str.trim().split(/\s+/).forEach(tok => { const [n, d] = tok.split(':'); const dur = d ? +d : 1; if (n !== 'R') out.push({ p: midi(n), s: t, d: dur }); t += dur; }); return out; };
+
+const SONGS = [
+  { id:'three', title:'Three Fingers', level:'First steps', bpm:80, blurb:'C, D, E, F and G, up and down.',
+    notes:'C4 D4 E4 D4 C4:2 E4 F4 G4 F4 E4:2 C4 E4 G4 E4 C4:2' },
+  { id:'mary', title:'Mary Had a Little Lamb', level:'Beginner', bpm:96, blurb:'Three notes, one familiar tune.',
+    notes:'E4 D4 C4 D4 E4 E4 E4:2 D4 D4 D4:2 E4 G4 G4:2 E4 D4 C4 D4 E4 E4 E4 E4 D4 D4 E4 D4 C4:4' },
+  { id:'twinkle', title:'Twinkle, Twinkle, Little Star', level:'Beginner', bpm:92, blurb:'Your first jump: C up to G.',
+    notes:'C4 C4 G4 G4 A4 A4 G4:2 F4 F4 E4 E4 D4 D4 C4:2 G4 G4 F4 F4 E4 E4 D4:2 G4 G4 F4 F4 E4 E4 D4:2 C4 C4 G4 G4 A4 A4 G4:2 F4 F4 E4 E4 D4 D4 C4:2' },
+  { id:'row', title:'Row, Row, Row Your Boat', level:'Beginner', bpm:96, blurb:'Long and short notes, up to high C.',
+    notes:'C4 C4 C4:1.5 D4:.5 E4:2 E4:1.5 D4:.5 E4:1.5 F4:.5 G4:4 C5:.5 C5:.5 C5:.5 G4:.5 G4:.5 G4:.5 E4:.5 E4:.5 E4:.5 C4:.5 C4:.5 C4:.5 G4:1.5 F4:.5 E4:1.5 D4:.5 C4:4' },
+  { id:'lune', title:'Au Clair de la Lune', level:'Easy', bpm:88, blurb:'A gentle French folk song.',
+    notes:'C4 C4 C4 D4 E4:2 D4:2 C4 E4 D4 D4 C4:4 C4 C4 C4 D4 E4:2 D4:2 C4 E4 D4 D4 C4:4 D4 D4 D4 D4 A4:2 A4:2 G4 G4 G4 G4 E4:2 E4:2 D4 D4 D4 D4 D4:4 C4 C4 C4 D4 E4:2 D4:2 C4 E4 D4 D4 C4:4' },
+  { id:'jingle', title:'Jingle Bells (chorus)', level:'Easy', bpm:112, blurb:'Repeated notes and a quick finish.',
+    notes:'E4 E4 E4:2 E4 E4 E4:2 E4 G4 C4:1.5 D4:.5 E4:4 F4 F4 F4:1.5 F4:.5 F4 E4 E4 E4:.5 E4:.5 E4 D4 D4 E4 D4:2 G4:2' },
+  { id:'ode', title:'Ode to Joy', level:'Medium', bpm:100, blurb:'Beethoven, for one hand.',
+    notes:'E4 E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 E4:1.5 D4:.5 D4:2 E4 E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 D4:1.5 C4:.5 C4:2' },
+  { id:'elise', title:'Für Elise (opening)', level:'Challenge', bpm:104, blurb:'Beethoven, with black keys.',
+    notes:'E5 D#5 E5 D#5 E5 B4 D5 C5 A4:3 R C4 E4 A4 B4:3 R E4 G#4 B4 C5:3 R E4 E5 D#5 E5 D#5 E5 B4 D5 C5 A4:3' }
+];
+SONGS.forEach(s => { s.notes = parse(s.notes); });
+
+/* saved progress and settings */
+let save = { stars:{}, from:0, demo:true, speak:true, oct:true, sens:'1' };
+try { Object.assign(save, JSON.parse(localStorage.getItem('keystep.coach.v1') || '{}')); } catch (e) {}
+const persist = () => { try { localStorage.setItem('keystep.coach.v1', JSON.stringify(save)); } catch (e) {} };
+
+/* ---------- sound out ---------- */
+let ac = null, master = null;
+function ensureAudio() {
+  if (!ac) {
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    master = ac.createGain(); master.gain.value = 0.8; master.connect(ac.destination);
+  }
+  if (ac.state !== 'running') ac.resume();
+  return ac;
+}
+function pluck(m, secs) {
+  const c = ac, t = c.currentTime, f = 440 * Math.pow(2, (m - 69) / 12), g = c.createGain();
+  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.45, t + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.02, t + Math.max(0.25, secs)); g.gain.exponentialRampToValueAtTime(0.0005, t + secs + 0.25);
+  g.connect(master);
+  [['triangle',1,1],['sine',2,.3],['sine',3,.1]].forEach(([ty, k, v]) => {
+    const o = c.createOscillator(), og = c.createGain(); o.type = ty; o.frequency.value = f * k; og.gain.value = v;
+    o.connect(og); og.connect(g); o.start(t); o.stop(t + secs + 0.3);
+  });
+}
+
+/* ---------- speech ---------- */
+let speaking = false, quietUntil = 0, voice = null;
+function pickVoice() {
+  try {
+    const vs = speechSynthesis.getVoices();
+    voice = vs.find(v => /en-GB/i.test(v.lang) && /Daniel|Serena|Kate|Martha/i.test(v.name)) || vs.find(v => /en-GB/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+  } catch (e) {}
+}
+if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function say(text, force) {
+  return new Promise(res => {
+    if ((!save.speak && !force) || !('speechSynthesis' in window)) return res();
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      if (voice) u.voice = voice; u.lang = voice ? voice.lang : 'en-GB'; u.rate = 1;
+      let done = false;
+      const fin = () => { if (done) return; done = true; speaking = false; quietUntil = performance.now() + 450; res(); };
+      u.onend = fin; u.onerror = fin;
+      speaking = true;
+      speechSynthesis.speak(u);
+      setTimeout(fin, 1200 + text.length * 110);
+    } catch (e) { speaking = false; res(); }
+  });
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+/* ---------- pitch detection (YIN) ---------- */
+const YW = 1536;
+function detectPitch(buf, sr, gate) {
+  const maxT = Math.floor(sr / 190), minT = Math.floor(sr / 1100);
+  const seg = buf.subarray(buf.length - YW - maxT - 2);
+  let e = 0; for (let i = seg.length - 1024; i < seg.length; i++) e += seg[i] * seg[i];
+  const rms = Math.sqrt(e / 1024);
+  if (rms < gate) return { rms, f: 0 };
+  const d = new Float32Array(maxT + 2);
+  for (let t = 1; t <= maxT + 1; t++) { let s = 0; for (let i = 0; i < YW; i++) { const x = seg[i] - seg[i + t]; s += x * x; } d[t] = s; }
+  const cm = new Float32Array(maxT + 2); cm[0] = 1; let run = 0;
+  for (let t = 1; t <= maxT + 1; t++) { run += d[t]; cm[t] = run ? d[t] * t / run : 1; }
+  let tau = -1;
+  for (let t = minT; t <= maxT; t++) if (cm[t] < 0.15) { while (t + 1 <= maxT && cm[t + 1] < cm[t]) t++; tau = t; break; }
+  if (tau < 0) return { rms, f: 0 };
+  const a = cm[tau - 1], b = cm[tau], c = cm[tau + 1], den = a - 2 * b + c;
+  return { rms, f: sr / (tau + (den ? (a - c) / (2 * den) : 0)) };
+}
+const toMidi = f => Math.round(69 + 12 * Math.log2(f / 440));
+
+/* ---------- microphone ---------- */
+let mic = null;
+async function openMic() {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+  const src = ac.createMediaStreamSource(stream), an = ac.createAnalyser();
+  an.fftSize = 4096; an.smoothingTimeConstant = 0; src.connect(an);
+  mic = { stream, an, buf: new Float32Array(4096), floor: 1, prev: 0, lastOnset: 0, pend: null };
+}
+function closeMic() { if (mic) { mic.stream.getTracks().forEach(t => t.stop()); mic = null; } }
+
+/* ---------- screen awake ---------- */
+let lock = null;
+async function keepAwake() { try { if ('wakeLock' in navigator && !lock) { lock = await navigator.wakeLock.request('screen'); lock.addEventListener('release', () => { lock = null; }); } } catch (e) {} }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && run) { keepAwake(); ensureAudio(); } });
+
+/* ---------- key map ---------- */
+const kb = $('#kb'), keyEl = {};
+for (let m = LOW; m <= HIGH; m++) {
+  const el = document.createElement('div'), b = isBlack(m);
+  el.className = 'key ' + (b ? 'black' : 'white');
+  if (b) { const bw = UW * .58; el.style.left = ((wIdx(m) + 1) * UW - bw / 2) + '%'; el.style.width = bw + '%'; }
+  else { el.style.left = wIdx(m) * UW + '%'; el.style.width = UW + '%'; const s = document.createElement('span'); s.textContent = NAMES[pc(m)] + (pc(m) === 0 ? (m === 60 ? '' : '') : ''); el.appendChild(s); }
+  kb.appendChild(el); keyEl[m] = el;
+}
+let wrongT = 0;
+function paintKeys(target, wrong) {
+  for (let m = LOW; m <= HIGH; m++) { keyEl[m].classList.toggle('target', m === target); keyEl[m].classList.toggle('wrong', m === wrong); }
+}
+
+/* ---------- practice flow ---------- */
+let run = null; // {i, song, idx, mistakes, phase, attempts, lastOk, lastOkT, lastWrongT, lastNudge}
+const big = $('#pBig'), msg = $('#pMsg');
+function setMsg(text, kind) { msg.textContent = text; msg.className = 'msg' + (kind ? ' ' + kind : ''); }
+function showTarget() {
+  const r = run, n = r.song.notes[r.idx];
+  $('#pFill').style.width = (r.idx / r.song.notes.length * 100) + '%';
+  if (!n) return;
+  big.textContent = NAMES[pc(n.p)];
+  $('#pLbl').textContent = 'Play';
+  const up = r.song.notes.slice(r.idx + 1, r.idx + 6).map(x => NAMES[pc(x.p)]);
+  $('#pNext').innerHTML = up.length ? '<span>Then</span>' + up.map(x => '<span>' + x + '</span>').join('') : '';
+  paintKeys(n.p, null);
+}
+async function playSong(i, attempt) {
+  const song = SONGS[i]; if (!song || !run) return;
+  const my = run.token = Symbol();
+  Object.assign(run, { i, song, idx: 0, mistakes: 0, phase: 'intro', attempts: attempt || 1, lastOkT: 0, lastWrongT: 0, lastNudge: performance.now() });
+  save.from = i; persist();
+  $('#pTitle').textContent = song.title;
+  $('#pSub').textContent = 'Song ' + (i + 1) + ' of ' + SONGS.length + (attempt > 1 ? ' · try ' + attempt : '');
+  showTarget(); setMsg('', '');
+  if (save.demo && (attempt || 1) === 1) {
+    $('#pLbl').textContent = 'Listen';
+    setMsg('Listen to the tune first', '');
+    await say(song.title + '. Listen first.');
+    if (run?.token !== my) return;
+    run.phase = 'demo';
+    const spb = 60 / song.bpm;
+    for (const n of song.notes) {
+      if (run?.token !== my) return;
+      const nd = n.d * spb;
+      big.textContent = NAMES[pc(n.p)]; paintKeys(n.p, null);
+      pluck(n.p, nd * .9);
+      await wait(nd * 1000);
+    }
+    await wait(600);
+    if (run?.token !== my) return;
+    quietUntil = performance.now() + 900;
+  }
+  showTarget();
+  run.phase = 'listen'; run.lastNudge = performance.now();
+  setMsg('Your turn', '');
+  await say((save.demo && (attempt || 1) === 1 ? 'Your turn. ' : '') + 'Start with ' + SAY[pc(song.notes[0].p)] + '.');
+  if (run?.token === my) setMsg('', '');
+}
+function matches(m, target) { return save.oct ? pc(m) === pc(target) : m === target; }
+function onNote(m) {
+  const r = run; if (!r || r.phase !== 'listen') return;
+  const n = r.song.notes[r.idx]; if (!n) return;
+  const now = performance.now();
+  // the same note ringing on: ignore a double trigger from one strike
+  if (r.lastOk != null && pc(m) === pc(r.lastOk) && now - r.lastOkT < 300) return;
+  if (matches(m, n.p)) {
+    r.lastOk = m; r.lastOkT = now; r.lastNudge = now; r.idx++;
+    big.classList.remove('no'); big.classList.add('ok'); setTimeout(() => big.classList.remove('ok'), 180);
+    setMsg('', '');
+    if (r.idx >= r.song.notes.length) finishSong(); else showTarget();
+  } else {
+    if (now - r.lastWrongT < 350) return;
+    r.lastWrongT = now; r.mistakes++; r.lastNudge = now;
+    big.classList.add('no'); setTimeout(() => big.classList.remove('no'), 400);
+    const diff = ((m - n.p) % 12 + 18) % 12 - 6;
+    const dir = diff > 0 ? (diff <= 2 ? 'a little lower' : 'lower') : (diff >= -2 ? 'a little higher' : 'higher');
+    setMsg('That was ' + NAMES[pc(m)] + '. Play ' + NAMES[pc(n.p)] + ', ' + dir + '.', 'bad');
+    paintKeys(n.p, m >= LOW && m <= HIGH ? m : null);
+    clearTimeout(wrongT); wrongT = setTimeout(() => { if (run && run.phase === 'listen') paintKeys(run.song.notes[run.idx]?.p, null); }, 1500);
+    say('That was ' + SAY[pc(m)] + '. Play ' + SAY[pc(n.p)] + ', ' + dir + '.');
+  }
+}
+async function finishSong() {
+  const r = run; r.phase = 'done'; const my = r.token;
+  const stars = r.mistakes <= 1 ? 3 : r.mistakes <= 4 ? 2 : 1;
+  save.stars[r.song.id] = Math.max(save.stars[r.song.id] || 0, stars); persist();
+  $('#pFill').style.width = '100%'; paintKeys(null, null);
+  $('#pLbl').textContent = r.mistakes === 0 ? 'No wrong notes' : r.mistakes + (r.mistakes === 1 ? ' wrong note' : ' wrong notes');
+  big.textContent = '★'.repeat(stars); $('#pNext').textContent = '';
+  const nextI = r.i + 1, again = stars < 3 && r.attempts < 3;
+  const words = stars === 3 ? 'Brilliant. Three stars.' : stars === 2 ? 'Well done. Two stars.' : 'You finished it. One star.';
+  let plan;
+  if (again) plan = "Let's play it once more.";
+  else if (SONGS[nextI]) plan = 'Next song: ' + SONGS[nextI].title + '.';
+  else plan = "That's every song. Great practice today.";
+  setMsg(words + ' ' + plan, stars === 3 ? 'good' : '');
+  await say(words + ' ' + plan, false);
+  await wait(2500);
+  if (run?.token !== my) return;
+  if (again) playSong(r.i, r.attempts + 1);
+  else if (SONGS[nextI]) playSong(nextI, 1);
+  else { $('#pLbl').textContent = 'All done'; setMsg('Tap Stop to go back to the songs.', 'good'); }
+}
+
+/* ---------- listening loop ---------- */
+const dot = $('#pDot'), heard = $('#pHeard');
+function loop(now) {
+  requestAnimationFrame(loop);
+  if (!mic || !run) return;
+  const sens = +save.sens, gate = 0.005 * sens;
+  const busy = speaking || now < quietUntil || run.phase !== 'listen';
+  dot.className = 'dot ' + (busy ? 'wait' : 'on');
+  mic.an.getFloatTimeDomainData(mic.buf);
+  const r = detectPitch(mic.buf, ac.sampleRate, gate), rms = r.rms;
+  const m = r.f ? toMidi(r.f) : null;
+  if (m != null && m >= 45 && m <= 96) heard.textContent = NAMES[pc(m)] + (Math.floor(m / 12) - 1); else if (rms < gate) heard.textContent = '–';
+  if (rms < mic.floor) mic.floor = rms; else mic.floor += (rms - mic.floor) * 0.015;
+  if (busy) { mic.pend = null; mic.prev = rms; return; }
+  if (rms > 0.011 * sens && rms > mic.floor * 1.45 && rms > mic.prev * 1.12 && now - mic.lastOnset > 130) {
+    mic.pend = { t: now, s: [] }; mic.lastOnset = now; mic.floor = rms;
+  }
+  mic.prev = rms;
+  const p = mic.pend;
+  if (p) {
+    if (m != null && now - p.t >= 35 && m >= 45 && m <= 96) p.s.push(m);
+    if (now - p.t >= 95 && p.s.length >= 2) {
+      const cnt = {}; p.s.forEach(x => { cnt[x] = (cnt[x] || 0) + 1; });
+      const best = +Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0];
+      mic.pend = null; onNote(best);
+    } else if (now - p.t > 300) mic.pend = null;
+  }
+  // a gentle reminder if nothing has happened for a while
+  if (run.phase === 'listen' && now - run.lastNudge > 25000) {
+    run.lastNudge = now; const n = run.song.notes[run.idx];
+    if (n) say('Take your time. The next note is ' + SAY[pc(n.p)] + '.');
+  }
+}
+
+/* ---------- setup screen ---------- */
+const starHtml = n => [1,2,3].map(i => i <= n ? '★' : '<span class="off">★</span>').join('');
+function renderList() {
+  const list = $('#list'); list.innerHTML = '';
+  SONGS.forEach((s, i) => {
+    const li = document.createElement('li'), b = document.createElement('button');
+    b.type = 'button'; b.className = 'lesson'; b.setAttribute('aria-pressed', String(i === save.from));
+    b.innerHTML = '<span class="n">' + (i + 1) + '</span><span><b></b><small></small></span><span class="stars">' + starHtml(save.stars[s.id] || 0) + '</span>';
+    b.querySelector('b').textContent = s.title; b.querySelector('small').textContent = s.level + '. ' + s.blurb;
+    b.addEventListener('click', () => { save.from = i; persist(); renderList(); });
+    li.appendChild(b); list.appendChild(li);
+  });
+}
+const bind = (id, key, isCheck) => { const el = $(id); if (isCheck) el.checked = !!save[key]; else el.value = save[key];
+  el.addEventListener('change', () => { save[key] = isCheck ? el.checked : el.value; persist(); }); };
+bind('#optDemo', 'demo', true); bind('#optSpeak', 'speak', true); bind('#optOct', 'oct', true); bind('#optSens', 'sens', false);
+
+function showErr(t) { const e = $('#err'); e.textContent = t; e.hidden = !t; }
+$('#startBtn').addEventListener('click', async () => {
+  showErr('');
+  ensureAudio();
+  // iPhone only lets a page speak after a tap, so the first words go out right here
+  if ('speechSynthesis' in window) { try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch (e) {} }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showErr('This browser cannot use the microphone here. Open this page in Safari from its web address (it must start with https).'); return;
+  }
+  try { await openMic(); }
+  catch (e) {
+    showErr('The microphone is blocked. On iPhone open Settings, then Safari, then Microphone, choose Ask or Allow, then reload this page and tap Start again.'); return;
+  }
+  keepAwake();
+  $('#setup').hidden = true; $('#practice').hidden = false; window.scrollTo(0, 0);
+  run = {};
+  await say("Hello. I'm listening to your piano.", false);
+  playSong(save.from, 1);
+});
+$('#stopBtn').addEventListener('click', () => {
+  run = null; try { speechSynthesis.cancel(); } catch (e) {}
+  speaking = false; closeMic(); try { lock && lock.release(); } catch (e) {} lock = null;
+  $('#practice').hidden = true; $('#setup').hidden = false; renderList();
+});
+
+renderList();
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
